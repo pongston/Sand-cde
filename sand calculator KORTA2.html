@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#1a2e3b">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Sand Calculator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg:      #0f1e27;
+    --surface: #1a2e3b;
+    --card:    #1f3547;
+    --border:  #2e4d62;
+    --accent:  #e8a430;
+    --accent2: #3d8fb5;
+    --text:    #d6e8f0;
+    --muted:   #6b8fa3;
+    --success: #4caf84;
+    --danger:  #e05c5c;
+    --water:   #6ecff6;
+    --radius:  10px;
+    --font:    'IBM Plex Sans Thai', sans-serif;
+    --mono:    'IBM Plex Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 48px;
+  }
+
+  /* ── Header ── */
+  header {
+    background: linear-gradient(135deg, #1a2e3b 0%, #0f2233 100%);
+    border-bottom: 2px solid var(--accent);
+    padding: 16px 18px 13px;
+    position: sticky;
+    top: 0;
+    z-index: 99;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .header-icon {
+    width: 36px; height: 36px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 19px;
+    flex-shrink: 0;
+  }
+  header h1 { font-size: 18px; font-weight: 700; color: #fff; }
+  header p  { font-size: 10px; color: var(--muted); margin-top:1px; font-family: var(--mono); }
+
+  /* ── Container ── */
+  .container { max-width: 640px; margin: 0 auto; padding: 0 13px; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 15px;
+    margin-top: 14px;
+  }
+  .card-title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-family: var(--mono);
+    margin-bottom: 13px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .card-title::before {
+    content: '';
+    display: block;
+    width: 3px; height: 13px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+  .card-title.blue { color: var(--accent2); }
+  .card-title.blue::before { background: var(--accent2); }
+  .card-title.water-c { color: var(--water); }
+  .card-title.water-c::before { background: var(--water); }
+
+  /* ── Section number badge ── */
+  .section-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px; height: 20px;
+    background: var(--accent);
+    color: #0f1e27;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    margin-right: 4px;
+    flex-shrink: 0;
+  }
+  .section-num.blue { background: var(--accent2); }
+  .section-num.green { background: var(--success); }
+  .section-num.water { background: var(--water); }
+
+  /* ── Form fields ── */
+  .field { margin-bottom: 12px; }
+  .field:last-child { margin-bottom: 0; }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: 5px;
+  }
+
+  .input-wrap { display: flex; gap: 7px; align-items: stretch; }
+
+  input[type="number"], select {
+    flex: 1;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 15px;
+    padding: 10px 13px;
+    outline: none;
+    transition: border-color .2s;
+    -moz-appearance: textfield;
+    width: 100%;
+  }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+  input[type="number"]:focus, select:focus {
+    border-color: var(--accent2);
+    background: #1e3347;
+  }
+  input.water-input:focus { border-color: var(--water); }
+
+  .unit-badge {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    padding: 0 12px;
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  select { cursor: pointer; flex: none; width: auto; padding-right: 10px; }
+
+  /* ── 2-col field grid ── */
+  .field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .field-grid .field { margin-bottom: 0; }
+
+  /* ── Divider ── */
+  .divider { height: 1px; background: var(--border); margin: 12px 0; }
+
+  /* ── Buttons ── */
+  .btn-calc {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent) 0%, #d4921e 100%);
+    color: #0f1e27;
+    font-family: var(--font);
+    font-size: 15px;
+    font-weight: 700;
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    cursor: pointer;
+    transition: opacity .15s, transform .1s;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn-calc:active { opacity: .85; transform: scale(.98); }
+
+  .btn-reset {
+    width: 100%;
+    background: transparent;
+    color: var(--muted);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: var(--font);
+    font-size: 13px;
+    padding: 10px;
+    cursor: pointer;
+    margin-top: 7px;
+    transition: border-color .2s, color .2s;
+  }
+  .btn-reset:hover { border-color: var(--danger); color: var(--danger); }
+
+  /* ── Results ── */
+  #results { display: none; animation: fadeUp .35s ease; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .result-date { font-size: 10px; color: var(--muted); font-family: var(--mono); }
+
+  /* result grid 2-col */
+  .result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+    margin-bottom: 9px;
+  }
+  .result-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+
+  .result-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 12px 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  .result-item::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity .3s;
+  }
+  .result-item.hl-amber::after  { background: var(--accent);  opacity: 1; }
+  .result-item.hl-blue::after   { background: var(--accent2); opacity: 1; }
+  .result-item.hl-green::after  { background: var(--success); opacity: 1; }
+  .result-item.hl-water::after  { background: var(--water);   opacity: 1; }
+  .result-item.hl-danger::after { background: var(--danger);  opacity: 1; }
+
+  .result-label { font-size: 10px; color: var(--muted); font-weight: 500; margin-bottom: 4px; }
+  .result-value {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1;
+  }
+  .result-value.negative { color: var(--danger); }
+  .result-value.positive { color: var(--success); }
+  .result-value.water-c  { color: var(--water); }
+  .result-unit { font-size: 10px; color: var(--muted); font-family: var(--mono); margin-top: 3px; }
+
+  /* diff card */
+  .diff-card {
+    border-radius: 8px;
+    padding: 13px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid;
+    margin-top: 0;
+  }
+  .diff-card.positive { background: rgba(76,175,132,.1); border-color: var(--success); }
+  .diff-card.negative { background: rgba(224,92,92,.1);  border-color: var(--danger);  }
+  .diff-card.zero     { background: rgba(61,143,181,.1); border-color: var(--accent2); }
+  .diff-label { font-size: 12px; font-weight: 600; }
+  .diff-value { font-family: var(--mono); font-size: 20px; font-weight: 700; }
+  .diff-card.positive .diff-value { color: var(--success); }
+  .diff-card.negative .diff-value { color: var(--danger);  }
+  .diff-card.zero     .diff-value { color: var(--accent2); }
+
+  /* half row */
+  .half-row { display: flex; gap: 9px; margin-top: 9px; }
+  .half-item {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 11px;
+    text-align: center;
+  }
+  .half-item .result-label { text-align: center; }
+  .half-item .result-value { font-size: 17px; text-align: center; }
+
+  .footer-note {
+    text-align: center;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 28px;
+    font-family: var(--mono);
+    opacity: .55;
+  }
+
+  @media (min-width: 640px) {
+    header { padding: 18px 26px 14px; }
+    .container { padding: 0 18px; }
+    .result-value { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-icon">🏗️</div>
+  <div>
+    <h1>Sand Calculator</h1>
+    <p>ข้อมูลและการคำนวณระหว่างวัน · v2.0</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ═══ SECTION 1: ยอดผลิต ═══ -->
+  <div class="card">
+    <div class="card-title">
+      <span class="section-num">1</span> ยอดผลิต &amp; Mix Design
+    </div>
+
+    <div class="field">
+      <label>ยอดผลิตระหว่างวัน (Production)</label>
+      <div class="input-wrap">
+        <input type="number" id="production" placeholder="0.000" step="0.001">
+        <span class="unit-badge">CU.M</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Sand Con CDE (%)</label>
+      <div class="input-wrap">
+        <input type="number" id="sandConPct" placeholder="50.000" step="0.001" value="50">
+        <span class="unit-badge">%</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="field-grid">
+      <div class="field">
+        <label>Mix Design Sand SUB</label>
+        <div class="input-wrap">
+          <input type="number" id="mixSandSub" placeholder="0.000" step="0.001">
+          <span class="unit-badge">CU.M</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Mix Design Sand Con</label>
+        <div class="input-wrap">
+          <input type="number" id="mixSandCon" placeholder="0.000" step="0.001">
+          <span class="unit-badge">Ton</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 2: Print Out ═══ -->
+  <div class="card">
+    <div class="card-title blue">
+      <span class="section-num blue">2</span> Print Out Sand
+    </div>
+
+    <div class="field-grid">
+      <div class="field">
+        <label>Print Out Sand SUB</label>
+        <div class="input-wrap">
+          <input type="number" id="printSandSub" placeholder="0.000" step="0.001">
+          <span class="unit-badge">CU.M</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Print Out Sand Con</label>
+        <div class="input-wrap">
+          <input type="number" id="printSandCon" placeholder="0.000" step="0.001">
+          <span class="unit-badge">Ton</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 3: Water ═══ -->
+  <div class="card">
+    <div class="card-title water-c">
+      <span class="section-num water">3</span> Water (น้ำ)
+    </div>
+
+    <div class="field-grid">
+      <div class="field">
+        <label>Water (C) [Mix Design]</label>
+        <div class="input-wrap">
+          <input type="number" id="waterMix" placeholder="0.000" step="0.001" class="water-input">
+          <span class="unit-badge">KG</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Water Print Out</label>
+        <div class="input-wrap">
+          <input type="number" id="waterPrint" placeholder="0.000" step="0.001" class="water-input">
+          <span class="unit-badge">KG</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-calc" onclick="calculate()">⚙️ คำนวณ</button>
+    <button class="btn-reset" onclick="resetAll()">↺ รีเซ็ตข้อมูลทั้งหมด</button>
+  </div>
+
+  <!-- ═══ RESULTS ═══ -->
+  <div id="results">
+
+    <!-- 2a. Raw Data Summary -->
+    <div class="card">
+      <div class="result-header">
+        <div class="card-title" style="margin-bottom:0;border:none;padding:0;">
+          <span class="section-num">ข้</span> ส่วนบันทึกข้อมูลดิบ
+        </div>
+        <span class="result-date" id="result-date"></span>
+      </div>
+
+      <div class="result-grid" style="margin-top:12px;">
+        <div class="result-item hl-amber">
+          <div class="result-label">ยอดผลิต (Production)</div>
+          <div class="result-value" id="r-production">—</div>
+          <div class="result-unit">CU.M</div>
+        </div>
+        <div class="result-item hl-amber">
+          <div class="result-label">Sand Con CDE</div>
+          <div class="result-value" id="r-cde-pct">—</div>
+          <div class="result-unit">%</div>
+        </div>
+        <div class="result-item hl-blue">
+          <div class="result-label">Mix Design Sand SUB</div>
+          <div class="result-value" id="r-mix-sub">—</div>
+          <div class="result-unit">CU.M</div>
+        </div>
+        <div class="result-item hl-blue">
+          <div class="result-label">Mix Design Sand Con</div>
+          <div class="result-value" id="r-mix-con">—</div>
+          <div class="result-unit">Ton</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Print Out Sand SUB</div>
+          <div class="result-value" id="r-print-sub">—</div>
+          <div class="result-unit">CU.M</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Print Out Sand Con</div>
+          <div class="result-value" id="r-print-con">—</div>
+          <div class="result-unit">Ton</div>
+        </div>
+        <div class="result-item hl-water">
+          <div class="result-label">Water (C) Mix Design</div>
+          <div class="result-value water-c" id="r-water-mix">—</div>
+          <div class="result-unit">KG</div>
+        </div>
+        <div class="result-item hl-water">
+          <div class="result-label">Water Print Out</div>
+          <div class="result-value water-c" id="r-water-print">—</div>
+          <div class="result-unit">KG</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2b. Calculated Results -->
+    <div class="card">
+      <div class="card-title green">
+        <span class="section-num green">ผล</span> ผลลัพธ์การคำนวณประจำวัน
+      </div>
+
+      <!-- Mix / Sub / CDE totals -->
+      <div class="result-grid">
+        <div class="result-item hl-amber">
+          <div class="result-label">Mix Total (C1)</div>
+          <div class="result-value" id="val-mix">—</div>
+          <div class="result-unit">CU.M</div>
+        </div>
+        <div class="result-item hl-blue">
+          <div class="result-label">Sub Total</div>
+          <div class="result-value" id="val-sub">—</div>
+          <div class="result-unit">ตัน</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">CDE Total</div>
+          <div class="result-value" id="val-cde">—</div>
+          <div class="result-unit">ตัน</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Sand รวม</div>
+          <div class="result-value" id="val-total-sand">—</div>
+          <div class="result-unit">ตัน</div>
+        </div>
+      </div>
+
+      <!-- 50/50 -->
+      <div class="half-row">
+        <div class="half-item">
+          <div class="result-label">50/50 (Sub)</div>
+          <div class="result-value" id="val-half-sub">—</div>
+          <div class="result-unit">ตัน</div>
+        </div>
+        <div class="half-item">
+          <div class="result-label">50/50 (CDE)</div>
+          <div class="result-value" id="val-half-cde">—</div>
+          <div class="result-unit">ตัน</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- NEW: Sand สุทธิ 3 items -->
+      <div style="font-size:11px;color:var(--muted);font-family:var(--mono);margin-bottom:8px;letter-spacing:.8px;">▸ ผลลัพธ์สุทธิ (Net Calculated)</div>
+
+      <div class="result-grid three">
+        <div class="result-item hl-blue">
+          <div class="result-label">Sand SUB สุทธิ</div>
+          <div class="result-value" id="val-sub-net">—</div>
+          <div class="result-unit">CU.M</div>
+        </div>
+        <div class="result-item hl-blue">
+          <div class="result-label">Sand Con สุทธิ</div>
+          <div class="result-value" id="val-con-net">—</div>
+          <div class="result-unit">Ton</div>
+        </div>
+        <div class="result-item hl-water">
+          <div class="result-label">Water ปรับปรุงสุทธิ</div>
+          <div class="result-value water-c" id="val-water-net">—</div>
+          <div class="result-unit">KG</div>
+        </div>
+      </div>
+
+      <div style="height:10px;"></div>
+
+      <!-- ผลต่าง -->
+      <div class="diff-card zero" id="diff-card">
+        <div>
+          <div class="result-label" style="margin-bottom:2px;">ผลต่าง (Sub − CDE)</div>
+          <div class="diff-label" id="diff-direction">—</div>
+        </div>
+        <div class="diff-value" id="val-diff">—</div>
+      </div>
+    </div>
+
+  </div><!-- /results -->
+
+</div>
+
+<p class="footer-note">Sand Calculator v2.0 · Windows &amp; Android</p>
+
+<script>
+  function fmt(n, dec) {
+    dec = dec !== undefined ? dec : 3;
+    return n.toLocaleString('th-TH', {
+      minimumFractionDigits: dec,
+      maximumFractionDigits: dec
+    });
+  }
+
+  function v(id) { return parseFloat(document.getElementById(id).value) || 0; }
+
+  function setVal(id, num, dec, cls) {
+    const el = document.getElementById(id);
+    el.textContent = fmt(num, dec);
+    if (cls) {
+      el.classList.remove('negative','positive','water-c');
+      el.classList.add(cls);
+    }
+  }
+
+  function calculate() {
+    // inputs
+    const production  = v('production');
+    const sandConPct  = v('sandConPct');
+    const mixSandSub  = v('mixSandSub');
+    const mixSandCon  = v('mixSandCon');
+    const printSandSub = v('printSandSub');
+    const printSandCon = v('printSandCon');
+    const waterMix    = v('waterMix');
+    const waterPrint  = v('waterPrint');
+    // sandSub/sandCDE now come from Print Out; mixC1 replaced by production
+    // ── Raw data display ──
+    setVal('r-production',  production,  3);
+    setVal('r-cde-pct',     sandConPct,  3);
+    setVal('r-mix-sub',     mixSandSub,  3);
+    setVal('r-mix-con',     mixSandCon,  3);
+    setVal('r-print-sub',   printSandSub,3);
+    setVal('r-print-con',   printSandCon,3);
+    setVal('r-water-mix',   waterMix,    3);
+    setVal('r-water-print', waterPrint,  3);
+
+    // ── Calculated totals ──
+    const mixTotal  = production;
+    const subTotal  = printSandSub;
+    const cdeTotal  = printSandCon;
+    const totalSand = printSandSub + printSandCon;
+    const half      = totalSand / 2;
+    const diff      = printSandSub - printSandCon;
+
+    setVal('val-mix',        mixTotal,  3);
+    setVal('val-sub',        subTotal,  3);
+    setVal('val-cde',        cdeTotal,  3);
+    setVal('val-total-sand', totalSand, 3);
+    setVal('val-half-sub',   half,      3);
+    setVal('val-half-cde',   half,      3);
+
+    // ── NEW: Net / สุทธิ calculations ──
+    // Sand SUB สุทธิ = Mix Design Sand SUB − Print Out Sand SUB
+    const subNet   = mixSandSub - printSandSub;
+    // Sand Con สุทธิ = Mix Design Sand Con − Print Out Sand Con
+    const conNet   = mixSandCon - printSandCon;
+    // Water ปรับปรุงสุทธิ = Water (C) Mix Design − Water Print Out
+    const waterNet = waterMix - waterPrint;
+
+    setVal('val-sub-net',   subNet,   3, subNet   < 0 ? 'negative' : subNet   > 0 ? 'positive' : '');
+    setVal('val-con-net',   conNet,   3, conNet   < 0 ? 'negative' : conNet   > 0 ? 'positive' : '');
+    setVal('val-water-net', waterNet, 3, 'water-c');
+
+    // ── ผลต่าง ──
+    const diffCard = document.getElementById('diff-card');
+    const valDiff  = document.getElementById('val-diff');
+    const diffDir  = document.getElementById('diff-direction');
+
+    valDiff.textContent = fmt(Math.abs(diff), 3);
+    diffCard.className  = 'diff-card';
+    if (diff > 0.0005) {
+      diffCard.classList.add('positive');
+      diffDir.textContent = 'Sub มากกว่า CDE';
+    } else if (diff < -0.0005) {
+      diffCard.classList.add('negative');
+      diffDir.textContent = 'CDE มากกว่า Sub';
+    } else {
+      diffCard.classList.add('zero');
+      diffDir.textContent = 'Sub = CDE (สมดุล)';
+    }
+
+    // timestamp
+    const now = new Date();
+    document.getElementById('result-date').textContent =
+      now.toLocaleDateString('th-TH', { day:'2-digit', month:'2-digit', year:'numeric' }) + ' ' +
+      now.toLocaleTimeString('th-TH', { hour:'2-digit', minute:'2-digit' });
+
+    const results = document.getElementById('results');
+    results.style.display = 'block';
+    results.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+
+  function resetAll() {
+    const ids = ['production','sandConPct','mixSandSub','mixSandCon',
+                 'printSandSub','printSandCon','waterMix','waterPrint',
+];
+    ids.forEach(id => { document.getElementById(id).value = ''; });
+    document.getElementById('sandConPct').value = '50';
+    document.getElementById('results').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+</script>
+</body>
+</html>
